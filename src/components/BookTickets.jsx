@@ -1,12 +1,17 @@
-const BookTickets = () => {
-  // Tạo danh sách các hàng ghế và số ghế trên mỗi hàng
-  const rows = "ABCDEFGHIJ".split("")
-  const seatsPerRow = 12
+import { useDispatch, useSelector } from "react-redux"
+import {
+  toggleSeatSelection,
+  cancelSeat,
+} from "../redux/slices/bookTicketsSlice"
 
-  // Tạo mảng ghế
-  const seats = rows.map((row) =>
-    Array.from({ length: seatsPerRow }, (_, i) => `${row}${i + 1}`)
+const BookTickets = () => {
+  const dispatch = useDispatch()
+  const { seatList, selectedSeats } = useSelector(
+    (state) => state.bookTicketsSlice
   )
+
+  // Tính tổng giá tiền của các ghế đã chọn
+  const total = selectedSeats.reduce((sum, seat) => sum + seat.gia, 0)
 
   return (
     <div className="container mx-auto my-6">
@@ -28,7 +33,7 @@ const BookTickets = () => {
           <div className="flex justify-center items-center">
             <div className="w-10 h-10 m-2"></div>{" "}
             {/* Placeholder for row letters */}
-            {Array.from({ length: seatsPerRow }, (_, i) => (
+            {Array.from({ length: 12 }, (_, i) => (
               <div
                 key={i}
                 className="w-10 h-10 m-2 flex justify-center items-center text-white"
@@ -40,25 +45,40 @@ const BookTickets = () => {
 
           {/* Seats */}
           <div className="flex flex-col justify-center items-center">
-            {seats.map((row, rowIndex) => (
+            {seatList.map((row, rowIndex) => (
               <div key={rowIndex} className="flex">
                 {/* Row letters */}
                 <div className="w-10 h-10 m-2 flex justify-center items-center text-white">
-                  {rows[rowIndex]}
+                  {row.hang}
                 </div>
                 {/* Seat buttons */}
-                {row.map((seat) => (
+                {row.danhSachGhe.map((seat) => (
                   <button
-                    key={seat}
-                    className="w-10 h-10 m-2 font-bold bg-white border-yellow-500 border-2 text-black rounded-sm hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    key={seat.soGhe}
+                    onClick={() =>
+                      dispatch(
+                        toggleSeatSelection({
+                          soGhe: seat.soGhe,
+                          hang: row.hang,
+                        })
+                      )
+                    }
+                    className={`w-10 h-10 m-2 font-bold rounded-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 ${
+                      seat.isSelected
+                        ? "bg-green-400"
+                        : seat.daDat
+                        ? "bg-orange-400"
+                        : "bg-white border-yellow-500 border-2 text-black hover:bg-yellow-200"
+                    }`}
                   >
-                    {seat}
+                    {seat.soGhe}
                   </button>
                 ))}
               </div>
             ))}
           </div>
         </div>
+
         {/* List of selected seats */}
         <div>
           <h3 className="text-white text-3xl font-bold text-center mb-4">
@@ -79,7 +99,7 @@ const BookTickets = () => {
             </div>
           </div>
           {/* Table */}
-          <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-4">
+          <div className="overflow-x-auto overflow-y-auto max-h-96 relative shadow-md sm:rounded-lg my-4">
             <table className="w-full text-sm text-left text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
@@ -95,23 +115,28 @@ const BookTickets = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="bg-white border-b">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"
-                  >
-                    A1
-                  </th>
-                  <td className="py-4 px-6">50.000</td>
-                  <td className="py-4 px-6">
-                    <button
-                      type="button"
-                      className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-1.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                {selectedSeats.map((seat) => (
+                  <tr className="bg-white border-b" key={seat.soGhe}>
+                    <th
+                      scope="row"
+                      className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"
                     >
-                      Cancel
-                    </button>
-                  </td>
-                </tr>
+                      {seat.soGhe}
+                    </th>
+                    <td className="py-4 px-6">{seat.gia}</td>
+                    <td className="py-4 px-6">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          dispatch(cancelSeat({ soGhe: seat.soGhe }))
+                        }
+                        className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-1.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                ))}
                 {/* Total */}
                 <tr className="bg-gray-100">
                   <th
@@ -120,7 +145,7 @@ const BookTickets = () => {
                   >
                     Total
                   </th>
-                  <td className="py-4 px-6 font-semibold">450.000</td>
+                  <td className="py-4 px-6 font-semibold">{total}</td>
                   <td className="py-4 px-6"></td>
                 </tr>
               </tbody>
