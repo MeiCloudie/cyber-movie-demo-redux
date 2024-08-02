@@ -1,10 +1,133 @@
 const BookTickets = () => {
+  // Tạo danh sách các hàng ghế và số ghế trên mỗi hàng
+  const rows = "ABCDEFGHIJ".split("")
+  const seatsPerRow = 12
+
+  // Tạo mảng ghế
+  const seats = rows.map((row) =>
+    Array.from({ length: seatsPerRow }, (_, i) => `${row}${i + 1}`)
+  )
+
   return (
     <div className="container mx-auto my-6">
       {/* Title */}
-      <h1 className="text-white font-bold text-6xl">BOOK MOVIE TICKETS</h1>
-      {/* Book Tickets Screen */}
-      {/* List of selected seats */}
+      <h1 className="text-yellow-500 font-bold text-6xl text-center my-6">
+        BOOK MOVIE TICKETS
+      </h1>
+
+      {/* Main Screen */}
+      <div className="flex justify-around">
+        {/* Book Tickets Screen */}
+        <div className="my-2">
+          {/* Screen */}
+          <div className="text-xl font-bold bg-white px-96 py-2 rounded-md">
+            Screen
+          </div>
+
+          {/* Column numbers */}
+          <div className="flex justify-center items-center">
+            <div className="w-10 h-10 m-2"></div>{" "}
+            {/* Placeholder for row letters */}
+            {Array.from({ length: seatsPerRow }, (_, i) => (
+              <div
+                key={i}
+                className="w-10 h-10 m-2 flex justify-center items-center text-white"
+              >
+                {i + 1}
+              </div>
+            ))}
+          </div>
+
+          {/* Seats */}
+          <div className="flex flex-col justify-center items-center">
+            {seats.map((row, rowIndex) => (
+              <div key={rowIndex} className="flex">
+                {/* Row letters */}
+                <div className="w-10 h-10 m-2 flex justify-center items-center text-white">
+                  {rows[rowIndex]}
+                </div>
+                {/* Seat buttons */}
+                {row.map((seat) => (
+                  <button
+                    key={seat}
+                    className="w-10 h-10 m-2 font-bold bg-white border-yellow-500 border-2 text-black rounded-sm hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  >
+                    {seat}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* List of selected seats */}
+        <div>
+          <h3 className="text-white text-3xl font-bold text-center mb-4">
+            SELECTED SEATS LIST
+          </h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <div className="bg-orange-400 p-4 rounded-md"></div>
+              <p className="text-white text-xl">Seats booked</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="bg-green-400 p-4 rounded-md"></div>
+              <p className="text-white text-xl">Seats selected</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="bg-gray-400 p-4 rounded-md"></div>
+              <p className="text-white text-xl">Seats available</p>
+            </div>
+          </div>
+          {/* Table */}
+          <div className="overflow-x-auto relative shadow-md sm:rounded-lg my-4">
+            <table className="w-full text-sm text-left text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                  <th scope="col" className="py-3 px-6">
+                    Seats
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Price
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Cancel
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="bg-white border-b">
+                  <th
+                    scope="row"
+                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"
+                  >
+                    A1
+                  </th>
+                  <td className="py-4 px-6">50.000</td>
+                  <td className="py-4 px-6">
+                    <button
+                      type="button"
+                      className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-1.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    >
+                      Cancel
+                    </button>
+                  </td>
+                </tr>
+                {/* Total */}
+                <tr className="bg-gray-100">
+                  <th
+                    scope="row"
+                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap"
+                  >
+                    Total
+                  </th>
+                  <td className="py-4 px-6 font-semibold">450.000</td>
+                  <td className="py-4 px-6"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
